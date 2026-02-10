@@ -1,0 +1,36 @@
+# USER_ID_FIELD: userId
+# ITEM_ID_FIELD: movieId
+# RATING_FIELD: rating
+# TIME_FIELD: timestamp
+
+# load_col:
+#   inter: [userId, movieId, rating, timestamp]
+
+# eval_args:
+#   group_by: user
+#   order: TO
+#   split: {RS: [0.8, 0.1, 0.1]}
+
+MODEL_INPUT_TYPE: pointwise
+
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+TIME_FIELD: timestamp
+load_col:
+    inter: [user_id, item_id, timestamp]
+
+eval_args:
+    group_by: user
+    order: TO
+    split: {RS: [0.8, 0.1, 0.1]}
+    mode: full
+
+knn_k: 100
+knn_sample_size: 1000
+knn_sampling: recent
+knn_similarity: jaccard
+knn_remind: false
+knn_pop_boost: 0
+knn_extend: false
+knn_normalize: true
+epochs: 0

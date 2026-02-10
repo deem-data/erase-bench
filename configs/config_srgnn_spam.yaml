@@ -1,0 +1,25 @@
+use_gpu: True
+show_progress: False
+train_neg_sample_args: ~
+train_batch_size: 256
+epochs: 30
+
+USER_ID_FIELD: session_id
+ITEM_ID_FIELD: item_id
+TIME_FIELD: timestamp
+SESSION_ID_FIELD: session_id
+load_col:
+    inter: [session_id, item_id, timestamp]
+
+eval_args:
+    group_by: user
+    order: TO
+    split: {RS: [0.8, 0.1, 0.1]}
+    mode: full
+
+eval_batch_size: 256
+
+min_user_inter_num: 3
+
+embedding_size: 100
+weight_decay: 1e-5

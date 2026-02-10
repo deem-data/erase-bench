@@ -1,0 +1,72 @@
+use_gpu: True
+# seed: set manually via command line --seed argument
+state: INFO
+reproducibility: True
+data_path: 'dataset/'
+show_progress: True
+
+# Dataset
+model: Sets2Sets
+task_type: NBR  # Required for next basket recommendation
+benchmark_filename: ~
+MAX_NBR_HISTORY_BASKETS: 100  # Maximum number of historical baskets to retain (matching original MAX_LENGTH=100)
+MAX_NBR_BASKET_SIZE: -1  # Maximum size of each basket (-1 for unlimited, matching original which uses lists)
+MIN_NBR_BASKET_COUNT: 4  # Minimum basket count per user
+# NEXT_BASKET_JSON is automatically constructed as {dataset}_merged.json
+loss_type: custom  # Using custom loss (MSELoss + set loss)
+
+train_neg_sample_args: ~
+valid_neg_sample_args: ~
+test_neg_sample_args: ~
+
+# Dataloader & Eval
+# NextBasketDataset uses temporal leave-one-out split by default
+eval_args:
+  split: {'RS':[1,1,1]}
+  group_by: ~
+  order: TO  # Temporal ordering
+  mode: full
+train_batch_size: 1  # Matching original: processes one user at a time (no batching)
+eval_batch_size: 64
+metrics: ['Recall', 'NDCG', 'Hit']
+topk: [10, 20]
+valid_metric: Recall@10
+valid_metric_bigger: True
+
+# Model hyper-parameters
+# Matching original Sets2Sets implementation settings
+embedding_size: 32  # Matching original: hidden_size=32
+hidden_size: 32  # Matching original: hidden_size=32
+dropout: 0.0  # Matching original: use_dropout=0
+SETS2SETS_SET_LOSS_WEIGHT: 10.0  # Matching original: labmda=10
+SETS2SETS_HISTORY_BIAS: 1.0  # Default history bias weight
+
+# Training
+# Matching original sets2sets_new.py default hyperparameters:
+# - num_iter: 20 (epochs)
+# - learning_rate: 0.001
+# - optimizer: Adam (betas=(0.9, 0.98), eps=1e-11)
+# - weight_decay: 0
+epochs: 20  # Matching original num_iter
+learner: adam
+learning_rate: 0.001  # Matching original
+weight_decay: 0.0  # Matching original (no L2 penalty)
+stopping_step: 100  # Set high to avoid early stopping (can be adjusted)
+clip_grad_norm: ~
+
+# Optional: Customize field names if different from NextBasketDataset defaults
+# SETS2SETS_HISTORY_ITEMS_FIELD: 'history_item_matrix'
+# SETS2SETS_HISTORY_LENGTH_FIELD: 'history_basket_length'
+# SETS2SETS_HISTORY_ITEM_LENGTH_FIELD: 'history_item_length_per_basket'
+# SETS2SETS_TARGET_ITEMS_FIELD: 'target_item_list'
+# SETS2SETS_TARGET_LENGTH_FIELD: 'target_item_length'
+
+# Notes:
+# 1. The model uses custom loss combining MSE and set loss (matching original)
+# 2. Set loss weight (lambda) controls the balance between MSE and ranking loss
+# 3. The model uses GRU encoder-decoder with attention mechanism
+# 4. Original uses use_embedding=1 and use_average_embedding=1
+# 5. To use temporal split (as in original), data should be in temporal order
+
+# Example usage:
+# python run_recbole.py --model=Sets2Sets --dataset=tafeng --config_files=config_sets2sets.yaml --seed=2

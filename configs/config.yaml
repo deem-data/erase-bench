@@ -1,0 +1,18 @@
+USER_ID_FIELD: userId
+ITEM_ID_FIELD: movieId
+RATING_FIELD: rating
+TIME_FIELD: timestamp
+
+# goodreads dataset
+load_col:
+  inter: [userId, movieId, rating, timestamp]
+
+eval_args:
+  group_by: user
+  order: TO
+  split: {RS: [0.8, 0.1, 0.1]}
+
+use_gpu: True
+gpu_id: 0
+show_progress: True
+epochs: 1

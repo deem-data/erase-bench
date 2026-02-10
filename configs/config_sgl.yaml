@@ -1,0 +1,62 @@
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+RATING_FIELD: rating
+TIME_FIELD: timestamp
+
+load_col:
+  inter: [user_id, item_id, rating, timestamp]
+
+threshold:
+  rating: 3.5
+
+train_neg_sample_args:
+  distribution: uniform
+  sample_num: 1
+
+eval_args:
+  group_by: user
+  order: TO
+  split: {RS: [0.8, 0.1, 0.1]}
+  mode: full
+  metrics: [Recall, NDCG, Hit, MRR]
+  topk: [10, 20]
+  valid_metric: Recall@20
+
+# Top-level parameters (needed because RecBole reads these separately)
+topk: [10, 20]
+valid_metric: Recall@20
+metrics: [Recall, NDCG, Hit, MRR]
+
+user_inter_num_interval: "[5, inf)"
+item_inter_num_interval: "[5, inf)"
+
+use_gpu: True
+gpu_id: 0
+show_progress: False
+epochs: 100
+early_stop: True
+
+# SGL specific parameters (from paper)
+# Paper uses embedding size 64
+embedding_size: 64
+# Paper tests with n_layers in {1, 2, 3, 4}, finds 3 works best
+n_layers: 3
+# Paper uses 'ED' (Edge Dropout) as the main augmentation method
+type: 'ED'
+# Paper uses drop_ratio in {0.0, 0.1, 0.2, 0.3}, finds 0.1 works best
+drop_ratio: 0.1
+# Paper uses ssl_tau (temperature) of 0.2
+ssl_tau: 0.2
+# Paper uses ssl_weight (lambda) in {0.005, 0.01, 0.05, 0.1, 0.5, 1.0}
+# Best values vary by dataset, 0.1 is a good default
+ssl_weight: 0.1
+# Paper uses L2 regularization 1e-4
+reg_weight: 1e-4
+
+# Training parameters
+# Paper uses Adam with lr=0.001
+learning_rate: 0.001
+learner: adam
+
+# Paper uses batch size 2048
+train_batch_size: 2048

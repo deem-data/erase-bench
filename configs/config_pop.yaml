@@ -1,0 +1,34 @@
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+RATING_FIELD: rating
+TIME_FIELD: timestamp
+
+load_col:
+  inter: [user_id, item_id, rating, timestamp]
+
+threshold:
+  rating: 3.5
+
+eval_args:
+  group_by: user
+  order: TO
+  split: {RS: [0.8, 0.1, 0.1]}
+  mode: full
+  metrics: [Recall, NDCG, Hit, MRR]
+  topk: [10, 20]
+  valid_metric: Recall@20
+
+# Top-level parameters (needed because RecBole reads these separately)
+topk: [10, 20]
+valid_metric: Recall@20
+metrics: [Recall, NDCG, Hit, MRR]
+
+user_inter_num_interval: "[5, inf)"
+item_inter_num_interval: "[5, inf)"
+
+# Runtime
+use_gpu: False
+gpu_id: ""
+early_stop: False  # Pop doesn't need early stopping
+show_progress: False
+epochs: 1  # Pop only needs 1 epoch to count item frequencies

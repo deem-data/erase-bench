@@ -1,0 +1,54 @@
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+RATING_FIELD: rating
+TIME_FIELD: timestamp
+
+load_col:
+  inter: [user_id, item_id, rating, timestamp]
+
+threshold:
+  rating: 3.5
+
+train_neg_sample_args:
+  distribution: uniform
+  sample_num: 1
+
+eval_args:
+  group_by: user
+  order: TO
+  split: {RS: [0.8, 0.1, 0.1]}
+  mode: full
+  metrics: [Recall, NDCG, Hit, MRR]
+  topk: [10, 20]
+  valid_metric: Recall@20
+
+# Top-level parameters (needed because RecBole reads these separately)
+topk: [10, 20]
+valid_metric: Recall@20
+metrics: [Recall, NDCG, Hit, MRR]
+
+user_inter_num_interval: "[5, inf)"
+item_inter_num_interval: "[5, inf)"
+
+# eval_args:
+#   group_by: user
+#   order: TO
+#   split: {RS: [0.8, 0.1, 0.1]}
+
+loss: bpr
+learning_rate: 0.001
+use_gpu: True
+gpu_id: 0
+early_stop: True
+show_progress: False
+epochs: 100
+
+
+
+
+
+# with leave one out random split, 1 epoch, seed 2:
+# 28 May 11:20    INFO  best valid : OrderedDict([('recall@10', 0.0844), ('mrr@10', 0.0334), ('ndcg@10', 0.0452), ('hit@10', 0.0844), ('precision@10', 0.0084)])
+# 28 May 11:20    INFO  test result: OrderedDict([('recall@10', 0.0848), ('mrr@10', 0.0341), ('ndcg@10', 0.0458), ('hit@10', 0.0848), ('precision@10', 0.0085)])
+
+# with leave one out temporal split, 1 epoch, seed 2:

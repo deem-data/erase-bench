@@ -1,0 +1,7 @@
+knn_k: 100                       # (int) Number of nearest neighbors to consider
+knn_sample_size: 1000            # (int) Maximum number of candidate sessions to sample (0 for all)
+knn_sampling: 'recent'           # (str) Sampling strategy. Range in ['recent', 'random']
+knn_similarity: 'jaccard'        # (str) Similarity metric. Range in ['jaccard', 'cosine', 'tanimoto', 'binary']
+knn_remind: false                # (bool) Whether to boost recently seen items in the session
+knn_pop_boost: 0                 # (float) Popularity boost factor (0 to disable)
+knn_normalize: true              # (bool) Whether to normalize scores

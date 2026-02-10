@@ -1,0 +1,35 @@
+use_gpu: True
+show_progress: False
+train_neg_sample_args: ~
+train_batch_size: 256
+epochs: 60
+
+USER_ID_FIELD: session_id
+ITEM_ID_FIELD: item_id
+TIME_FIELD: timestamp
+SESSION_ID_FIELD: session_id
+load_col:
+    inter: [session_id, item_id, timestamp]
+
+eval_args:
+    group_by: user
+    order: TO
+    split: {RS: [0.8, 0.1, 0.1]}
+    mode: full
+
+eval_batch_size: 256
+
+min_user_inter_num: 3
+
+MAX_ITEM_LIST_LENGTH: 50
+POSITION_FIELD: position_id
+
+n_layers: 2
+n_heads: 2
+hidden_size: 32
+hidden_act: gelu
+inner_size: 128 # (4 * hidden_size)
+hidden_dropout_prob: 0.5
+attn_dropout_prob: 0.5
+
+training_batch_size: 128

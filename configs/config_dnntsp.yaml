@@ -1,0 +1,71 @@
+use_gpu: True
+# seed: set manually via command line --seed argument
+state: INFO
+reproducibility: True
+data_path: 'dataset/'
+show_progress: True
+
+# Dataset
+model: DNNTSP
+task_type: NBR  # Required for next basket recommendation
+benchmark_filename: ~
+MAX_NBR_HISTORY_BASKETS: 50  # Maximum number of historical baskets to retain (original doesn't specify, using reasonable default)
+MAX_NBR_BASKET_SIZE: -1  # Maximum size of each basket (-1 for unlimited, matching original which uses dynamic graphs)
+MIN_NBR_BASKET_COUNT: 4  # Minimum basket count per user (matching original preprocessing)
+# NEXT_BASKET_JSON is automatically constructed as {dataset}_merged.json
+loss_type: custom  # Using custom loss (MultiLabelSoftMarginLoss, matching original "multi_label_soft_loss")
+
+train_neg_sample_args: ~
+valid_neg_sample_args: ~
+test_neg_sample_args: ~
+
+# Dataloader & Eval
+# NextBasketDataset uses temporal leave-one-out split by default
+eval_args:
+  split: {'RS':[1,1,1]}
+  group_by: ~
+  order: TO  # Temporal ordering
+  mode: full
+train_batch_size: 64  # Matching original: batch_size=64
+eval_batch_size: 64
+metrics: ['Recall', 'NDCG', 'Hit']
+topk: [10, 20]
+valid_metric: Recall@10
+valid_metric_bigger: True
+
+# Model hyper-parameters
+# Matching original DNNTSP implementation from config.json
+embedding_size: 32  # Matching original: item_embed_dim=32
+
+# Training
+# Matching original DNNTSP config.json hyperparameters:
+# - epochs: 40
+# - batch_size: 64
+# - learning_rate: 0.001
+# - optim: Adam
+# - weight_decay: 0
+# - loss_function: multi_label_soft_loss
+epochs: 100  # Matching original
+learner: adam  # Matching original optim: Adam
+learning_rate: 0.001  # Matching original
+weight_decay: 0.0  # Matching original (no L2 penalty)
+stopping_step: 100  # Set high to avoid early stopping (can be adjusted)
+clip_grad_norm: ~
+
+# Optional: Customize field names if different from NextBasketDataset defaults
+# DNNTSP_HISTORY_ITEMS_FIELD: 'history_item_matrix'
+# DNNTSP_HISTORY_LENGTH_FIELD: 'history_basket_length'
+# DNNTSP_HISTORY_ITEM_LENGTH_FIELD: 'history_item_length_per_basket'
+# DNNTSP_TARGET_ITEMS_FIELD: 'target_item_list'
+# DNNTSP_TARGET_LENGTH_FIELD: 'target_item_length'
+
+# Notes:
+# 1. The model uses MultiLabelSoftMarginLoss (matching original 'multi_label_soft_loss')
+# 2. Graph construction is done on-the-fly from basket sequences
+# 3. Edge weights are computed based on item co-occurrence in baskets
+# 4. The model requires NextBasketDataset format with task_type='NBR'
+# 5. To use temporal split (as in original), data should be in temporal order
+
+# Example usage:
+# python run_recbole.py --model=DNNTSP --dataset=instacart --config_files=config_dnntsp.yaml --seed=2
+

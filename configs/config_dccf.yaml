@@ -1,0 +1,35 @@
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+RATING_FIELD: rating
+TIME_FIELD: timestamp
+
+# goodreads dataset
+load_col:
+  inter: [user_id, item_id, rating, timestamp]
+
+eval_args:
+  group_by: user
+  order: TO
+  split: {RS: [0.8, 0.1, 0.1]}
+
+user_inter_num_interval: "[5, inf)"
+item_inter_num_interval: "[5, inf)"
+
+use_gpu: False
+gpu_id: ""
+show_progress: False
+
+MODEL_INPUT_TYPE: pairwise
+embedding_size: 64
+n_layers: 2
+
+# others
+epochs: 1
+learning_rate: 1e-3
+train_batch_size: 256
+
+n_intents: 128
+temp: 0.5
+emb_reg: 1e-4
+cen_reg: 1e-4
+ssl_reg: 0.1

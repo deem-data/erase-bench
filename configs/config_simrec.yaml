@@ -1,0 +1,65 @@
+#   inter: [userId, movieId, rating, timestamp]
+
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+RATING_FIELD: rating
+TIME_FIELD: timestamp
+
+load_col:
+  inter: [user_id, item_id, rating, timestamp]
+
+eval_args:
+  group_by: user
+  order: TO
+  split: {RS: [0.8, 0.1, 0.1]}
+  mode: full
+  metrics: [Recall, NDCG, Hit, MRR]
+  topk: [10, 20]
+  valid_metric: Recall@20
+
+# Top-level parameters (needed because RecBole reads these separately)
+topk: [10, 20]
+valid_metric: Recall@20
+metrics: [Recall, NDCG, Hit, MRR]
+
+user_inter_num_interval: "[5, inf)"
+item_inter_num_interval: "[5, inf)"
+
+treshold:
+  rating: 3.5
+
+# Runtime
+use_gpu: True
+gpu_id: 0
+show_progress: True
+
+# Input mode for SimRec’s teacher/student architecture
+# (SimRec uses InputType.POINTWISE internally; no need for MODEL_INPUT_TYPE)
+
+# Embedding & layer sizes
+embedding_size: 64
+teacher_n_layers: 2      # used to set LightGCN’s depth
+student_n_layers: 1      # used in MLP input size
+
+# L2 regularization
+reg_weight_teacher: 1e-5
+reg_weight_student: 1e-5
+
+# Distillation strengths lambda
+lambda_pred_distill: 1.0
+lambda_emb_distill: 1.0
+lambda_contrast_reg: 0.1
+
+# Distillation temperatures tau
+temp_pred_distill: 1.0
+temp_emb_distill: 1.0
+temp_contrast_reg: 1.0
+
+# Freeze the teacher LightGCN
+freeze_teacher: true
+
+# Training hyperparameters
+epochs: 1
+learning_rate: 1e-3
+train_batch_size: 2048
+

@@ -1,0 +1,39 @@
+MODEL_INPUT_TYPE: pointwise
+
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+TIME_FIELD: timestamp
+SESSION_ID_FIELD: session_id
+
+load_col:
+    inter: [user_id, session_id, item_id, timestamp]
+
+eval_args:
+    group_by: user
+    order: TO
+    split: {RS: [0.8, 0.1, 0.1]}
+    mode: full
+    metrics: [Recall, NDCG, Hit, MRR]
+    topk: [10, 20]
+    valid_metric: Recall@20
+
+# Top-level parameters
+topk: [10, 20]
+valid_metric: Recall@20
+metrics: [Recall, NDCG, Hit, MRR]
+
+knn_k: 100
+knn_sample_size: 1000
+knn_sampling: recent
+knn_similarity: jaccard
+knn_remind: false
+knn_pop_boost: 0
+knn_extend: false
+knn_normalize: true
+
+# Runtime
+use_gpu: False
+gpu_id: -1
+show_progress: False
+epochs: 0  # SKNN is memory-based, no training needed
+

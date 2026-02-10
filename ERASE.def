@@ -1,0 +1,52 @@
+Bootstrap: docker
+From: ubuntu:24.04
+
+%post
+
+    # Install wget first, then miniconda
+    apt-get update && apt-get install -y wget git
+    if [ ! -d /opt/miniconda3 ]; then
+        cd /tmp
+        wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3
+
+        export PATH="/opt/miniconda3/bin:$PATH"
+        # Initialize conda and add to PATH
+        /opt/miniconda3/bin/conda init bash
+        
+        # Accept conda Terms of Service
+        /opt/miniconda3/bin/conda config --set channel_priority flexible
+        /opt/miniconda3/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+        /opt/miniconda3/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+        
+        # Create conda environment with Python 3.8.20 (using conda-forge to avoid TOS)
+        /opt/miniconda3/bin/conda create -n venv python=3.8.20 -c conda-forge -y
+    fi
+        
+    # Activate the conda environment (using eval method for build compatibility)
+    eval "$(/opt/miniconda3/bin/conda shell.bash hook)"
+    conda activate venv
+    
+    # Upgrade pip in the conda environment
+    pip install --upgrade pip
+    
+    # Clone and setup ERASE
+    rm -rf /opt/erase-bench
+    git clone https://github.com/deem-data/erase-bench.git /opt/erase-bench
+    cd /opt/erase-bench
+    
+    # Install ERASE and dependencies
+    pip install . --verbose
+    pip install -r requirements.txt
+    
+%environment
+    # Set up conda environment variables
+    export PATH="/opt/miniconda3/bin:$PATH"
+
+%runscript
+    #!/bin/bash
+    export PATH="/opt/miniconda3/bin:$PATH"
+    eval "$(/opt/miniconda3/bin/conda shell.bash hook)"
+    conda activate venv
+    cd /opt/erase-bench
+    /opt/miniconda3/envs/venv/bin/python "$@"
