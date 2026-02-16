@@ -31,12 +31,22 @@ From the repository root:
 python -m venv .venv
 source .venv/bin/activate
 pip install -U pip
-pip install -e .
+pip install .
 pip install -r requirements.txt
 ```
 
 Notes:
 - `requirements.txt` includes `torch_geometric`-related packages. If installation fails due to CUDA / wheel compatibility, install PyTorch first, then follow the official PyG installation instructions for your CUDA/PyTorch combination and re-run `pip install -r requirements.txt`.
+
+
+### Container for reproducability
+
+To get the exact environment used for experiments you can build a container using apptainer. Run ```apptainer build --force --fakeroot ERASE.sif ERASE.def``` to build the container ```ERASE.sif```. You can use this container python files, for example to unlearn:
+
+```
+        apptainer run  --nv --bind <path_to_saved>/:/opt/erase-bench/saved/ --bind <path_to_log>/:/opt/erase-bench/log/ --bind <path_to_dataset>/:/opt/erase-bench/dataset/ --bind <path_to_log_tensorboard>/:/opt/erase-bench/log_tensorboard/ --bind <path_to_configs>/:/opt/erase-bench/configs/ ERASE.sif unlearn.py <params_for_the_python_script>
+```
+
 
 ## Re-running the benchmark
 
@@ -113,7 +123,7 @@ Use `--spam` as well when retraining in the spam scenario.
 
 ## Unlearning a model
 
-To unlearn from an already trained checkpoint, run `unlearn_test.py` with:
+To unlearn from an already trained checkpoint, run `unlearn.py` with:
 - the forget-set specification (`--unlearning_fraction`, `--unlearning_sample_selection_method`, and optionally `--sensitive_category`)
 - the unlearning method (`--unlearning_algorithm`)
 - optional method-specific hyperparameters
@@ -121,7 +131,7 @@ To unlearn from an already trained checkpoint, run `unlearn_test.py` with:
 Example (SCIF on sensitive-category unlearning, SBR):
 
 ```bash
-python unlearn_test.py \
+python unlearn.py \
   --model SRGNN \
   --dataset amazon_reviews_books \
   --task_type SBR \
@@ -141,7 +151,7 @@ Method-specific examples:
 
 ```bash
 # Kookmin: tune init rate
-python unlearn_test.py ... --unlearning_algorithm kookmin --kookmin_init_rate 0.0001
+python unlearn.py ... --unlearning_algorithm kookmin --kookmin_init_rate 0.0001
 ```
 
 ### Intermediate checkpoints
@@ -178,10 +188,10 @@ Optional:
 
 ### Evaluate existing unlearned checkpoints
 
-Use `unlearn_test.py --eval_only` to evaluate already-produced unlearned checkpoints:
+Use `unlearn.py --eval_only` to evaluate already-produced unlearned checkpoints:
 
 ```bash
-python unlearn_test.py \
+python unlearn.py \
   --model SRGNN \
   --dataset amazon_reviews_books \
   --task_type SBR \
@@ -222,13 +232,13 @@ Optionally:
 - Add default hyperparameters in `recbole/properties/model/ModelName.yaml`
 - Add an experiment config (e.g., `config_<model>.yaml`) for benchmark settings
 
-The model becomes runnable via `--model ModelName` in both `run_recbole.py` and `unlearn_test.py`.
+The model becomes runnable via `--model ModelName` in both `run_recbole.py` and `unlearn.py`.
 
 ### Adding a new unlearning algorithm
 
 Expose the method by extending:
 
-- the CLI in `unlearn_test.py` (add a new `--unlearning_algorithm` choice + method-specific hyperparameters)
+- the CLI in `unlearn.py` (add a new `--unlearning_algorithm` choice + method-specific hyperparameters)
 - the unlearning pipeline in `recbole/quick_start/quick_start.py` (invoked via `recbole.quick_start.unlearn_recbole`)
 
 The method should take a trained checkpoint and a forget request as input and produce updated checkpoints for evaluation at fixed intermediate checkpoints.
@@ -250,7 +260,7 @@ You can run the benchmark on private datasets entirely locally:
 
 - Clone the repository
 - Add your datasets (and optionally scenarios/models/unlearning algorithms)
-- Run `run_recbole.py` and `unlearn_test.py` as above
+- Run `run_recbole.py` and `unlearn.py` as above
 
 No external APIs are required once dependencies are installed.
 
