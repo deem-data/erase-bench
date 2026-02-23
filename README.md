@@ -72,7 +72,7 @@ python run_recbole.py \
   --dataset amazon_reviews_books \
   --task_type SBR \
   --config_files "config_srgnn.yaml" \
-  --seed 2 \
+  --seed 2
 ```
 
 This produces a checkpoint in `./saved/` and evaluation metrics in the logs.
@@ -108,7 +108,7 @@ python run_recbole.py \
   --unlearning_fraction 0.0001 \
   --unlearning_sample_selection_method sensitive_category_health \
   --sensitive_category health \
-  --retrain_checkpoint_idx_to_match 3 \
+  --retrain_checkpoint_idx_to_match 3
 ```
 
 The retrained baseline checkpoint is saved as:
@@ -141,7 +141,7 @@ python unlearn.py \
   --unlearning_sample_selection_method sensitive_category_health \
   --sensitive_category health \
   --unlearning_algorithm scif \
-  --max_norm 10.0 \
+  --max_norm 10.0
 ```
 
 Supported unlearning algorithms (CLI choices):
