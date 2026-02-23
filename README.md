@@ -59,7 +59,7 @@ To reproduce a run, reuse the same config file(s) and CLI arguments.
 
 ### Outputs
 
-- **Logs**: typically under `./logs/` (depending on RecBole logging config)
+- **Logs**: by default under `./logs/` (depending on logging config)
 - **Checkpoints**: by default under `./saved/` (RecBole’s `checkpoint_dir`)
 
 ## Training a model (base model)
@@ -71,7 +71,7 @@ python run_recbole.py \
   --model SRGNN \
   --dataset amazon_reviews_books \
   --task_type SBR \
-  --config_files "config_srgnn.yaml" \
+  --config_files "configs/config_srgnn.yaml" \
   --seed 2
 ```
 
@@ -86,7 +86,7 @@ python run_recbole.py \
   --model SRGNN \
   --dataset amazon_reviews_books \
   --task_type SBR \
-  --config_files "config_srgnn.yaml" \
+  --config_files "configs/config_srgnn.yaml" \
   --seed 2 \
   --spam \
   --n_target_items 10
@@ -103,7 +103,7 @@ python run_recbole.py \
   --model SRGNN \
   --dataset amazon_reviews_books \
   --task_type SBR \
-  --config_files "config_srgnn.yaml" \
+  --config_files "configs/config_srgnn.yaml" \
   --seed 2 \
   --unlearning_fraction 0.0001 \
   --unlearning_sample_selection_method sensitive_category_health \
@@ -135,7 +135,7 @@ python unlearn.py \
   --model SRGNN \
   --dataset amazon_reviews_books \
   --task_type SBR \
-  --config_files "config_srgnn.yaml" \
+  --config_files "configs/config_srgnn.yaml" \
   --seed 2 \
   --unlearning_fraction 0.0001 \
   --unlearning_sample_selection_method sensitive_category_health \
@@ -177,7 +177,7 @@ python run_recbole.py \
   --model SRGNN \
   --dataset amazon_reviews_books \
   --task_type SBR \
-  --config_files "config_srgnn.yaml" \
+  --config_files "configs/config_srgnn.yaml" \
   --seed 2 \
   --eval_only
 ```
@@ -195,7 +195,7 @@ python unlearn.py \
   --model SRGNN \
   --dataset amazon_reviews_books \
   --task_type SBR \
-  --config_files "config_srgnn.yaml" \
+  --config_files "configs/config_srgnn.yaml" \
   --seed 2 \
   --unlearning_fraction 0.0001 \
   --unlearning_sample_selection_method sensitive_category_health \
