@@ -38,8 +38,6 @@ from recbole.utils import (
     set_color,
     get_flops,
     get_environment,
-    load_model_from_path,
-    parse_hf_model_path,
 )
 
 import pandas as pd
@@ -615,30 +613,11 @@ def run_recbole(
     if eval_only:
         # Skip training and load model from checkpoint
         logger.info("Eval-only mode: skipping training and loading model from checkpoint")
-        
-        # Check if a HuggingFace model path is specified
-        if "hf_model_path" in config and config["hf_model_path"] is not None:
-            # Load from HuggingFace Hub
-            model_file_path = config["hf_model_path"]
-            logger.info(f"Loading model from HuggingFace: {model_file_path}")
-            
-            # Use the HF loader utility
-            checkpoint = load_model_from_path(
-                model_file_path,
-                map_location=config["device"],
-                hf_token=config.get("hf_token", None),
-                cache_dir=config.get("hf_cache_dir", None)
-            )
-        else:
-            # Load from local path (original behavior)
-            # Use the trainer's saved_model_file which is already constructed correctly
-            model_file_path = trainer.saved_model_file
-            
-            if not os.path.exists(model_file_path):
-                raise FileNotFoundError(f"Model file not found: {model_file_path}. Expected path: {model_file_path}")
-            
-            logger.info(f"Loading model from local path: {model_file_path}")
-            checkpoint = torch.load(model_file_path, map_location=config["device"])
+        model_file_path = trainer.saved_model_file
+        if not os.path.exists(model_file_path):
+            raise FileNotFoundError(f"Model file not found: {model_file_path}. Expected path: {model_file_path}")
+        logger.info(f"Loading model from local path: {model_file_path}")
+        checkpoint = torch.load(model_file_path, map_location=config["device"])
         
         # Load the state dict into the model
         trainer.model.load_state_dict(checkpoint["state_dict"])
