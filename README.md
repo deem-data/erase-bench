@@ -184,7 +184,6 @@ python run_recbole.py \
 
 Optional:
 - `--sensitive_eval_only` (only sensitive evaluation, no utility evaluation; requires `--eval_only`)
-- `--hf_model_path hf://...` (load checkpoint from HuggingFace in eval-only mode; see `run_recbole.py`)
 
 ### Evaluate existing unlearned checkpoints
 
